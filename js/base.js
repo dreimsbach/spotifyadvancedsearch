@@ -104,8 +104,16 @@ var audioPlayerInit =  function (e) {
     }
 };
 
+var openSpotifyURL =  function (e) {
+    var target = e.target;
+    if (target !== null && target.classList.contains('cover')) {
+        var url = target.getAttribute('data-album-url');
+        document.location = url;
+    }
+};
+
 results.addEventListener('click', audioPlayerInit);
-results.addEventListener('touchstart', audioPlayerInit);
+results.addEventListener('touchstart', openSpotifyURL);
 
 
 window.addEventListener("keypress", function(e) {
