@@ -92,6 +92,7 @@ results.addEventListener('click', function (e) {
         } else {
             pauseAudio();
             fetchTracks(target.getAttribute('data-album-id'), function (data) {
+                alert(data.tracks.items[0].preview_url);
                 audioObject = new Audio(data.tracks.items[0].preview_url);
                 alert("play");
                 audioObject.play();
