@@ -83,14 +83,17 @@ var searchAlbums = function (query, callback) {
 };
 
 results.addEventListener('click', function (e) {
+    alert("click event audio");
     var target = e.target;
     if (target !== null && target.classList.contains('cover')) {
         if (target.classList.contains(playingCssClass)) {
+            alert("click event audio");
             pauseAudio();
         } else {
             pauseAudio();
             fetchTracks(target.getAttribute('data-album-id'), function (data) {
                 audioObject = new Audio(data.tracks.items[0].preview_url);
+                alert("play");
                 audioObject.play();
                 target.classList.add(playingCssClass);
                 audioObject.addEventListener('ended', function () {
