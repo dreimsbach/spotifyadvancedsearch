@@ -112,8 +112,8 @@ var openSpotifyURL =  function (e) {
     }
 };
 
-results.addEventListener('click', audioPlayerInit);
-results.addEventListener('touchstart', openSpotifyURL);
+//results.addEventListener('mousedown', audioPlayerInit);
+results.addEventListener('click', openSpotifyURL);
 
 
 window.addEventListener("keypress", function(e) {
