@@ -3,7 +3,8 @@ var templateSource = document.getElementById('results-template').innerHTML,
   template = Handlebars.compile(templateSource),
   noResultTemplateSource = document.getElementById('no-results-template').innerHTML,
   noResultTemplate = Handlebars.compile(noResultTemplateSource),
-  resultsPlaceholder = document.getElementById('results');
+  resultsPlaceholder = document.getElementById('results'),
+  definiteResult = [];
 
 
 var fetchTracks = function(albumId, callback) {
@@ -59,16 +60,6 @@ var searchAlbums = function(requestObj, callback) {
             list.push(entry);
             // Ende rausfinden
             if (records.length == list.length) {
-              list.sort(function(a, b) {
-                if (a.releaseDate > b.releaseDate) {
-                  return -1;
-                }
-                if (a.releaseDate < b.releaseDate) {
-                  return 1;
-                }
-                // a must be equal to b
-                return 0;
-              });
               callback(list);
             }
           })
@@ -111,25 +102,40 @@ document.getElementById('findRecords').addEventListener('click', function(e) {
 
 var searchLabels = function() {
   document.getElementById('results').innerHTML = "";
+  definiteResult = [];
 
-  var lastSearches = getLabelsFromStorage();
-  if (!$.isEmptyObject(lastSearches)) {
+  var
+    lastSearches = getLabelsFromStorage(),
+    totalSize = Object.keys(lastSearches).length,
+    count = 0;
+
+  if (totalSize > 0) {
     for (key in lastSearches) {
-      searchAlbums(lastSearches[key], function(data) {
-        if (data.length > 0) {
-          var currentLabelContainer = document.createElement('div'),
-            currentLabelHeadline = document.createElement('div'),
-            currentLabelContent = document.createElement('div');
-          currentLabelContent.innerHTML = template(data);
-
-          currentLabelContainer.appendChild(currentLabelHeadline);
-          currentLabelContainer.appendChild(currentLabelContent);
-
-          document.getElementById('results').appendChild(currentLabelContainer);
-        }
-      });
+      var entry = lastSearches[key];
+      count++;
+      (function(entry, totalSize) {
+        searchAlbums(entry, function(data) {
+          if (data.length > 0) {
+            definiteResult = definiteResult.concat(data);
+          }
+          if (count == totalSize) {
+            definiteResult.sort(function(a, b) {
+              if (a.releaseDate > b.releaseDate) {
+                return -1;
+              }
+              if (a.releaseDate < b.releaseDate) {
+                return 1;
+              }
+              // a must be equal to b
+              return 0;
+            });
+            document.getElementById('results').innerHTML = template(definiteResult);
+          }
+        });
+      })(entry, totalSize);
     }
   }
+
 }
 
 var addToLabelList = function(label) {

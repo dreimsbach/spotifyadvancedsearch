@@ -37,19 +37,12 @@
   <script id="results-template" type="text/x-handlebars-template">
     {{#each this}}
     <div class="box">
-      <div style="background-image:url({{coverimage}})" data-album-id="{{id}}" data-album-url="{{uri}}" class="cover">
-        {{#if newFlag}}
-        <div class="newBox">
-          NEW
-        </div>
-        {{/if}}
-      </div>
+      <div style="background-image:url({{coverimage}})" data-album-id="{{id}}" data-album-url="{{uri}}" class="cover"></div>
       <div>{{artist}}</div>
       <div>{{album}}</div>
       <div>Label: {{label}}</div>
       <div>Release: {{releaseDate}}</div>
       <div>Typ: {{albumType}}</div>
-      <div><a class="openuri" href="{{uri}}">Open</a></div>
     </div>
     {{/each}}
   </script>
