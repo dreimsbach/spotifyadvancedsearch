@@ -186,6 +186,8 @@ var removeLabel = function (labelToDelete) {
         }
     }
     setLabelsToStorage(newList);
+
+    searchLabels();
 }
 
 var getLabelsFromStorage = function() {
