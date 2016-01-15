@@ -3,9 +3,8 @@ var templateSource = document.getElementById('results-template').innerHTML,
     template = Handlebars.compile(templateSource),
     noResultTemplateSource = document.getElementById('no-results-template').innerHTML,
     noResultTemplate = Handlebars.compile(noResultTemplateSource),
-    resultsPlaceholder = document.getElementById('results'),
-    playingCssClass = 'playing',
-    audioObject = null;
+    resultsPlaceholder = document.getElementById('results');
+
 
 var fetchTracks = function (albumId, callback) {
     $.ajax({
@@ -15,12 +14,6 @@ var fetchTracks = function (albumId, callback) {
             callback(response);
         }
     });
-};
-
-var pauseAudio = function () {
-    if (audioObject) {
-        audioObject.pause();
-    }
 };
 
 var searchAlbums = function (query, callback) {
@@ -82,28 +75,6 @@ var searchAlbums = function (query, callback) {
     });
 };
 
-var audioPlayerInit =  function (e) {
-    var target = e.target;
-    if (target !== null && target.classList.contains('cover')) {
-        if (target.classList.contains(playingCssClass)) {
-            pauseAudio();
-        } else {
-            pauseAudio();
-            fetchTracks(target.getAttribute('data-album-id'), function (data) {
-                audioObject = new Audio(data.tracks.items[0].preview_url);
-                audioObject.play();
-                target.classList.add(playingCssClass);
-                audioObject.addEventListener('ended', function () {
-                    target.classList.remove(playingCssClass);
-                });
-                audioObject.addEventListener('pause', function () {
-                    target.classList.remove(playingCssClass);
-                });
-            });
-        }
-    }
-};
-
 var openSpotifyURL =  function (e) {
     var target = e.target;
     if (target !== null && target.classList.contains('cover')) {
@@ -112,126 +83,128 @@ var openSpotifyURL =  function (e) {
     }
 };
 
-//results.addEventListener('mousedown', audioPlayerInit);
 results.addEventListener('click', openSpotifyURL);
-
-
-window.addEventListener("keypress", function(e) {
-  if (e.keyCode === 0 || e.keyCode === 32) {
-    //e.preventDefault();
-  pauseAudio();
-  }
-});
-
-window.addEventListener('focus', function() {
-  pauseAudio();
-});
-
-window.addEventListener('blur', function() {
-  pauseAudio();
-});
 
 document.getElementById('search-form').addEventListener('submit', function (e) {
     e.preventDefault();
 
     var query,
-      artist,
-        year,
-        label,
-      artistField = document.getElementById('artist').value,
-        yearField = document.getElementById('year').value,
         labelField = document.getElementById('label').value;
 
-    if (artistField) {
-        artist = "artist:\""  + artistField + "\"";
-    }
-
-    if (yearField) {
-        if ("new" === yearField) {
-            year = "tag:new";
-        } else {
-          year = "year:"  + yearField ;
-        }
-    }
-
     if (labelField) {
-        label = "label:\""  + labelField + "\"";
+        addToLabelList(labelField);
+        showLabelList();
     }
 
-
-
-    query = $.grep([artist, label, year], Boolean).join(", ");
-
-    searchAlbums(query, function(data) {
-        if (data.length > 0) {
-            resultsPlaceholder.innerHTML = template(data);
-            addToSearchHistory(labelField, yearField, artistField);
-        } else {
-            resultsPlaceholder.innerHTML = noResultTemplate(data);
-        }
-        showLastSearches();
-    });
+    searchLabels();
 
 
 }, false);
 
-var addToSearchHistory = function (label, year, artist) {
-    var lastSearches = JSON.parse(localStorage.getItem('lastSearchArray')) || {},
-      lastSearchObj = {
-            "label": label,
-            "year": year,
-            "artist": artist
-        },
-        lastSearchKey = encodeURI(label+year+artist);
+document.getElementById('findRecords').addEventListener('click', function (e) {
+    e.preventDefault();
+   searchLabels();
+}, false);
 
+var searchLabels = function() {
+    document.getElementById('results').innerHTML = "";
 
-    lastSearches[lastSearchKey] =  lastSearchObj;
-    localStorage.setItem("lastSearchArray", JSON.stringify(lastSearches));
+    var lastSearches = getLabelsFromStorage();
+    if (!$.isEmptyObject(lastSearches)) {
+        for (key in lastSearches) {
+            var entry = lastSearches[key],
+                query = "label:\""  + entry.label + "\", tag:new";
+
+            searchAlbums(query, function(data) {
+                if (data.length > 0) {
+                    var currentLabelContainer = document.createElement('div'),
+                        currentLabelHeadline = document.createElement('div'),
+                        currentLabelContent = document.createElement('div');
+
+                    currentLabelHeadline.innerHTML = query;
+                    currentLabelContent.innerHTML = template(data);
+
+                    currentLabelContainer.appendChild(currentLabelHeadline);
+                    currentLabelContainer.appendChild(currentLabelContent);
+
+                    document.getElementById('results').appendChild(currentLabelContainer);
+                }
+            });
+        }
+    }
 }
 
-var showLastSearches = function () {
-    var $lastSearchesContainer = $("#lastSearchesContainer"),
-      $lastSearchesList = $("#lastSearches");
-    $lastSearchesList.empty();
+var addToLabelList = function (label) {
+    var currentLabels = getLabelsFromStorage(),
+        labelObj = {
+            "label": label
+        },
+        labelKey = encodeURI(label);
 
-    var lastSearches = JSON.parse(localStorage.getItem('lastSearchArray')) || {};
+    currentLabels[labelKey] =  labelObj;
+    setLabelsToStorage(currentLabels);
+}
+
+var showLabelList = function () {
+    var $labelsContainer = $("#labelsContainer"),
+        $labelsList = $("#lastSearches");
+    $labelsList.empty();
+
+    var lastSearches = getLabelsFromStorage();
 
     if (!$.isEmptyObject(lastSearches)) {
-        $lastSearchesContainer.show();
+        $labelsContainer.show();
 
         for (key in lastSearches) {
             var entry = lastSearches[key];
 
             $('<li/>', {
-                'data-label': entry.label,
-                'data-year': entry.year,
-                'data-artist': entry.artist
+                'data-label': entry.label
             }) //
-            .append("<span>Label:  "+ entry.label +"</span>") //
-            .append("<span>Year:  "+ entry.year +"</span>") //
-            .append("<span>Artist:  "+ entry.artist +"</span>") //
+            .append("<span>"+ entry.label +"</span>") //
             .addClass("last-search-entry") //
-            .appendTo($lastSearchesList) //
+            .appendTo($labelsList) //
             .click(function() {
                 var $element = $(this);
-                $("#label").val($element.data("label"));
-                $("#year").val($element.data("year"));
-                $("#artist").val($element.data("artist"));
-                $("#search").click();
+                removeLabel($element.data("label"));
+                showLabelList();
             });
       }
     } else {
-        $lastSearchesContainer.hide();
+        $labelsContainer.hide();
     }
+}
+
+var removeLabel = function (labelToDelete) {
+    var newList =  {},
+        oldList = getLabelsFromStorage();
+
+    if (!$.isEmptyObject(oldList)) {
+        for (key in oldList) {
+            var entry = oldList[key];
+            if (labelToDelete !== entry.label) {
+                newList[key] = entry;
+            }
+        }
+    }
+    setLabelsToStorage(newList);
+}
+
+var getLabelsFromStorage = function() {
+    return JSON.parse(localStorage.getItem('labelList')) || {};
+}
+
+var setLabelsToStorage = function(currentLabels) {
+    localStorage.setItem("labelList", JSON.stringify(currentLabels));
 }
 
 var clearHistory = function () {
     localStorage.clear();
-    showLastSearches();
+    showLabelList();
 }
 
 $(document).ready(function() {
     $("#label").focus();
     $("#clearHistory").click(clearHistory);
-    showLastSearches();
+    showLabelList();
 });
