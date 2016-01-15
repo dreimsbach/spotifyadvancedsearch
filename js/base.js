@@ -16,11 +16,13 @@ var fetchTracks = function (albumId, callback) {
     });
 };
 
-var searchAlbums = function (query, callback) {
+var searchAlbums = function (requestObj, callback) {
+
+
     $.ajax({
         url: 'https://api.spotify.com/v1/search',
         data: {
-            q: query,
+            q: "label:\""  + requestObj.label + "\", tag:new",
             type: 'album',
             market: 'DE'
         },
@@ -43,8 +45,9 @@ var searchAlbums = function (query, callback) {
 
                 entry.uri = record.uri;
                 entry.id = record.id;
-                entry.converimage = record.images[0].url;
+                entry.coverimage = record.images[0].url;
                 entry.albumType = record.album_type;
+                entry.label = requestObj.label;
 
                 (function(record, entry, list, newReleaseFlagDate){
                     fetchTracks(record.id, function(data) {
@@ -112,16 +115,11 @@ var searchLabels = function() {
     var lastSearches = getLabelsFromStorage();
     if (!$.isEmptyObject(lastSearches)) {
         for (key in lastSearches) {
-            var entry = lastSearches[key],
-                query = "label:\""  + entry.label + "\", tag:new";
-
-            searchAlbums(query, function(data) {
+            searchAlbums(lastSearches[key], function(data) {
                 if (data.length > 0) {
                     var currentLabelContainer = document.createElement('div'),
                         currentLabelHeadline = document.createElement('div'),
                         currentLabelContent = document.createElement('div');
-
-                    currentLabelHeadline.innerHTML = query;
                     currentLabelContent.innerHTML = template(data);
 
                     currentLabelContainer.appendChild(currentLabelHeadline);
