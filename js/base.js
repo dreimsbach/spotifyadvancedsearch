@@ -110,7 +110,8 @@ var searchLabels = function() {
 }
 
 var addToLabelList = function(label) {
-  var currentLabels = getLabelsFromStorage(),
+  if (label && !label.startsWith( "#" )) {
+    var currentLabels = getLabelsFromStorage(),
     labelObj = {
       "label": label
     },
@@ -118,6 +119,7 @@ var addToLabelList = function(label) {
 
   currentLabels[labelKey] = labelObj;
   setLabelsToStorage(currentLabels);
+  }
 }
 
 var showLabelList = function() {
