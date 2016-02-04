@@ -1,25 +1,22 @@
 // find template and compile it
-var templateSource = document.getElementById('results-template').innerHTML,
+var
+  templateSource = document.getElementById('results-template').innerHTML,
   template = Handlebars.compile(templateSource),
   noResultTemplateSource = document.getElementById('no-results-template').innerHTML,
   noResultTemplate = Handlebars.compile(noResultTemplateSource),
   resultsPlaceholder = document.getElementById('results'),
   definiteResult = [];
 
-
 var fetchTracks = function(albumId, callback) {
   $.ajax({
     url: 'https://api.spotify.com/v1/albums/' + albumId,
     success: function(response) {
-      //console.log(response);
       callback(response);
     }
   });
 };
 
 var searchAlbums = function(requestObj, callback) {
-
-
   $.ajax({
     url: 'https://api.spotify.com/v1/search',
     data: {
@@ -28,7 +25,6 @@ var searchAlbums = function(requestObj, callback) {
       market: 'DE'
     },
     success: function(response) {
-      //console.log(response);
       var list = [],
         newReleaseFlagDate = new Date(),
         records = response.albums.items;
@@ -58,7 +54,6 @@ var searchAlbums = function(requestObj, callback) {
             entry.newFlag = new Date(entry.releaseDate) >= newReleaseFlagDate;
             entry.genres = data.gernres;
             list.push(entry);
-            // Ende rausfinden
             if (records.length == list.length) {
               callback(list);
             }
@@ -76,58 +71,6 @@ var openSpotifyURL = function(e) {
     document.location = url;
   }
 };
-
-results.addEventListener('click', openSpotifyURL);
-
-document.getElementById('search-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-
-  var query,
-    labelField = document.getElementById('label').value;
-
-  if (labelField) {
-    addToLabelList(labelField);
-    showLabelList();
-  }
-
-  searchLabels();
-}, false);
-
-
-document.getElementById('upload-from-list').addEventListener('click', function(e) {
-  $("#file-upload-container").show();
-}, false);
-
-document.getElementById('label-file').addEventListener('change', function(e) {
-  e.preventDefault();
-
-  var selectedFile = document.getElementById('label-file').files[0];
-
-  var reader = new FileReader();
-  reader.onload = function(){
-    localStorage.clear();
-
-    var lines = reader.result.split('\n');
-
-    for (key in lines) {
-      var entry = lines[key];
-      addToLabelList(entry);
-    }
-
-    showLabelList();
-    searchLabels();
-  };
-  reader.readAsText(selectedFile);
-
-  $("#file-upload-container").hide();
-
-}, false);
-
-
-document.getElementById('find-records').addEventListener('click', function(e) {
-  e.preventDefault();
-  searchLabels();
-}, false);
 
 var searchLabels = function() {
   document.getElementById('results').innerHTML = "";
@@ -155,7 +98,6 @@ var searchLabels = function() {
               if (a.releaseDate < b.releaseDate) {
                 return 1;
               }
-              // a must be equal to b
               return 0;
             });
             document.getElementById('results').innerHTML = template(definiteResult);
@@ -238,9 +180,56 @@ var clearHistory = function() {
   showLabelList();
 }
 
-$(document).ready(function() {
+var submitSearchForm = function(e) {
+  e.preventDefault();
+
+  var labelField = document.getElementById('label').value;
+  if (labelField) {
+    addToLabelList(labelField);
+    showLabelList();
+  }
+
+  searchLabels();
+}
+
+var changeOrUploadFile = function(e) {
+  e.preventDefault();
+
+  var
+    selectedFile = document.getElementById('label-file').files[0],
+    reader = new FileReader();
+
+  reader.onload = function(){
+    localStorage.clear();
+
+    var lines = reader.result.split('\n');
+
+    for (key in lines) {
+      var entry = lines[key];
+      addToLabelList(entry);
+    }
+
+    showLabelList();
+    searchLabels();
+  };
+  reader.readAsText(selectedFile);
+
+  $("#file-upload-container").hide();
+}
+
+var init = function() {
   $("#label").focus();
-  $("#clear-history").click(clearHistory);
+  $("#clear-history").on("click", clearHistory);
+  $("#find-records").on("click", searchLabels);
+  $("#search-form").on("submit", submitSearchForm);
+  $("#label-file").on("change", changeOrUploadFile);
+  $("#upload-from-list").on("click", function() {
+    $("#file-upload-container").show();
+  });
   showLabelList();
   searchLabels();
-});
+}
+
+// INIT
+$(document).ready(init);
+results.addEventListener('click', openSpotifyURL);
