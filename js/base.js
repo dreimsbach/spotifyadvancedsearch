@@ -192,6 +192,19 @@ var submitSearchForm = function(e) {
   searchLabels();
 }
 
+var useDataFromFile = function(data) {
+  localStorage.clear();
+
+  var lines = data.split('\n');
+  for (key in lines) {
+    var entry = lines[key];
+    addToLabelList(entry);
+  }
+
+  showLabelList();
+  searchLabels();
+}
+
 var changeOrUploadFile = function(e) {
   e.preventDefault();
 
@@ -200,21 +213,20 @@ var changeOrUploadFile = function(e) {
     reader = new FileReader();
 
   reader.onload = function(){
-    localStorage.clear();
-
-    var lines = reader.result.split('\n');
-
-    for (key in lines) {
-      var entry = lines[key];
-      addToLabelList(entry);
-    }
-
-    showLabelList();
-    searchLabels();
+    useDataFromFile(reader.result);
   };
   reader.readAsText(selectedFile);
 
   $("#file-upload-container").hide();
+}
+
+var readFromURL = function(e) {
+  e.preventDefault();
+  $.ajax( {
+      url: $('#label-url-list').val(),
+      success:useDataFromFile
+   });
+  $("#url-upload-container").hide();
 }
 
 var init = function() {
@@ -223,8 +235,13 @@ var init = function() {
   $("#find-records").on("click", searchLabels);
   $("#search-form").on("submit", submitSearchForm);
   $("#label-file").on("change", changeOrUploadFile);
-  $("#upload-from-list").on("click", function() {
+  $("#url-update-form").on("submit", readFromURL);
+
+  $("#upload-from-list-btn").on("click", function() {
     $("#file-upload-container").show();
+  });
+  $("#upload-from-url-btn").on("click", function() {
+    $("#url-upload-container").show();
   });
   showLabelList();
   searchLabels();
