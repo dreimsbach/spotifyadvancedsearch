@@ -91,11 +91,40 @@ document.getElementById('search-form').addEventListener('submit', function(e) {
   }
 
   searchLabels();
+}, false);
 
+
+document.getElementById('upload-from-list').addEventListener('click', function(e) {
+  $("#file-upload-container").show();
+}, false);
+
+document.getElementById('label-file').addEventListener('change', function(e) {
+  e.preventDefault();
+
+  var selectedFile = document.getElementById('label-file').files[0];
+
+  var reader = new FileReader();
+  reader.onload = function(){
+    localStorage.clear();
+
+    var lines = reader.result.split('\n');
+
+    for (key in lines) {
+      var entry = lines[key];
+      addToLabelList(entry);
+    }
+
+    showLabelList();
+    searchLabels();
+  };
+  reader.readAsText(selectedFile);
+
+  $("#file-upload-container").hide();
 
 }, false);
 
-document.getElementById('findRecords').addEventListener('click', function(e) {
+
+document.getElementById('find-records').addEventListener('click', function(e) {
   e.preventDefault();
   searchLabels();
 }, false);
@@ -150,8 +179,8 @@ var addToLabelList = function(label) {
 }
 
 var showLabelList = function() {
-  var $labelsContainer = $("#labelsContainer"),
-    $labelsList = $("#lastSearches");
+  var $labelsContainer = $("#labels-container"),
+    $labelsList = $("#last-searches");
   $labelsList.empty();
 
   var lastSearches = getLabelsFromStorage();
@@ -211,6 +240,7 @@ var clearHistory = function() {
 
 $(document).ready(function() {
   $("#label").focus();
-  $("#clearHistory").click(clearHistory);
+  $("#clear-history").click(clearHistory);
   showLabelList();
+  searchLabels();
 });

@@ -5,16 +5,12 @@ body {
     margin-bottom: 20px;
 }
 
-#lastSearchesContainer {
-    display:none;
-}
-
-.lastSearchesContainerInner {
+.last-searches-container-inner {
     max-height: 200px;
     overflow:auto;
 }
 
-#clearHistory {
+#clear-history {
     cursor:pointer;
     text-decoration:underline;
 }
@@ -62,4 +58,8 @@ body {
 }
 .cover.playing {
     border: 5px solid #e45343;
+}
+
+#file-upload-container {
+    display:none;
 }
