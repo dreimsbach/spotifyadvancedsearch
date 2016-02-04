@@ -1,7 +1,7 @@
 body {
     padding: 20px;
 }
-#search-form, .form-control {
+form, .form-control {
     margin-bottom: 20px;
 }
 
@@ -66,4 +66,12 @@ body {
 
 #url-upload-container {
     display:none;
+}
+
+.btn+.btn {
+    margin-left: 0px!important;
+}
+
+.btn {
+    margin-top: 10px;
 }

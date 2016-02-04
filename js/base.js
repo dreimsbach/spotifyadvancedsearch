@@ -238,9 +238,12 @@ var init = function() {
   $("#url-update-form").on("submit", readFromURL);
 
   $("#upload-from-list-btn").on("click", function() {
+    $("#url-upload-container").hide();
     $("#file-upload-container").show();
   });
+
   $("#upload-from-url-btn").on("click", function() {
+    $("#file-upload-container").hide();
     $("#url-upload-container").show();
   });
   showLabelList();
