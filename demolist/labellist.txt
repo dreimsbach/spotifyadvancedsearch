@@ -25,6 +25,9 @@ Running Back
 Peoples Potential Unlimited
 Delusions of Grandeur
 KI Records
+Hypercolour
+Dekmantel
+Omega Supreme Records
 
 # Jazz
 Jazzman
@@ -32,3 +35,6 @@ Jazzland
 Double Moon
 Rune Grammofon
 Gondwana
+
+#Other
+Soul Jazz
