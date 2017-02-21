@@ -34,6 +34,7 @@ Hypnus
 Scissor & Thread
 Lobster Theremin
 Mörk
+Distant Hawaii
 Live at Robert Johnson
 Love Notes From Brooklyn
 Quintessentials
@@ -43,6 +44,8 @@ Batti Batti
 Flumo
 Endless Flight
 Rhythm Section International
+Robsoul Jazz
+Royal Oak
 
 # Jazz
 Jazzman
@@ -52,8 +55,9 @@ Rune Grammofon
 Gondwana
 Neuklang
 Pirouet
+Fresh Sound Records
+Cam Jazz
 
 #Other
 Soul Jazz
 Heavenly Sweetness
-
