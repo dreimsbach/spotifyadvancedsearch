@@ -75,3 +75,7 @@ form, .form-control {
 .btn {
     margin-top: 10px;
 }
+
+#login-button-container {
+  display:none;
+}
