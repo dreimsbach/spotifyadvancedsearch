@@ -19,14 +19,19 @@ var fetchTracks = function(albumId, callback) {
   });
 };
 
-var searchAlbums = function(requestObj, callback) {
+var searchAlbums = function(requestObj, callback, year) {
+  var yearAppendix = "tag:new";
+  if (year) {
+    yearAppendix = "year:" + year;
+  }
+
   $.ajax({
     url: 'https://api.spotify.com/v1/search',
     headers: {
       'Authorization': 'Bearer ' + AUTH.getAccessToken()
     },
     data: {
-      q: "label:\"" + requestObj.label + "\", tag:new",
+      q: "label:\"" + requestObj.label + "\", " + yearAppendix,
       type: 'album',
       market: 'DE'
     },
@@ -252,7 +257,7 @@ var searchDirectLabel = function(e) {
   }, function(data) {
     document.getElementById('results').innerHTML = template(
       data);
-  });
+  }, document.getElementById('year').value);
 }
 
 var initLogin = function() {
