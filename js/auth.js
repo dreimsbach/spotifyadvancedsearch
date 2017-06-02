@@ -5,7 +5,12 @@ var AUTH = (function() {
 
   var login = function(successCallback) {
     var CLIENT_ID = '66ed85f628e24aef9b803c8b8cca4de9';
-    var REDIRECT_URI = 'http://localhost/spotifysearch/callback.html';
+
+    if (location.host === 'localhost') {
+      REDIRECT_URI = 'http://localhost/spotifysearch/callback.html';
+    } else {
+      REDIRECT_URI = 'http://www.monoaural.de/callback.html';
+    }
 
     function getLoginURL() {
       return 'https://accounts.spotify.com/authorize?client_id=' +
