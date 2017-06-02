@@ -5,11 +5,52 @@ var
   noResultTemplateSource = document.getElementById('no-results-template').innerHTML,
   noResultTemplate = Handlebars.compile(noResultTemplateSource),
   resultsPlaceholder = document.getElementById('results'),
-  definiteResult = [];
+  definiteResult = [],
+  accessToken = '';
+
+var login = function() {
+  var CLIENT_ID = '66ed85f628e24aef9b803c8b8cca4de9';
+  var REDIRECT_URI = 'http://localhost/spotifysearch/callback.html';
+  function getLoginURL() {
+      return 'https://accounts.spotify.com/authorize?client_id=' + CLIENT_ID +
+        '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
+        //'&scope=' + encodeURIComponent(scopes.join(' ')) +
+        '&response_type=token';
+  }
+
+  //console.log(getLoginURL())
+
+  var url = getLoginURL();
+
+  console.log(url);
+
+  var width = 450,
+            height = 730,
+            left = (screen.width / 2) - (width / 2),
+            top = (screen.height / 2) - (height / 2);
+
+  window.addEventListener("message", function(event) {
+      var hash = JSON.parse(event.data);
+      if (hash.type == 'access_token') {
+        accessToken= hash.access_token;
+          //callback(hash.access_token);
+
+      }
+  }, false);
+
+  var w = window.open(url,
+    'Spotify',
+    'menubar=no,location=no,resizable=no,scrollbars=no,status=no, width=' + width + ', height=' + height + ', top=' + top + ', left=' + left
+   );
+
+};
 
 var fetchTracks = function(albumId, callback) {
   $.ajax({
     url: 'https://api.spotify.com/v1/albums/' + albumId,
+    headers: {
+      'Authorization': 'Bearer ' + accessToken
+    },
     success: function(response) {
       callback(response);
     }
@@ -19,6 +60,9 @@ var fetchTracks = function(albumId, callback) {
 var searchAlbums = function(requestObj, callback) {
   $.ajax({
     url: 'https://api.spotify.com/v1/search',
+    headers: {
+      'Authorization': 'Bearer ' + accessToken
+    },
     data: {
       q: "label:\"" + requestObj.label + "\", tag:new",
       type: 'album',
@@ -232,6 +276,7 @@ var readFromURL = function(e) {
 }
 
 var init = function() {
+  $("#btn-login").on("click", login);
   $("#label").focus();
   $("#clear-history").on("click", clearHistory);
   $("#find-records").on("click", searchLabels);
@@ -249,7 +294,7 @@ var init = function() {
     $("#url-upload-container").show();
   });
   showLabelList();
-  searchLabels();
+  //searchLabels();
 }
 
 // INIT
