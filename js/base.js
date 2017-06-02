@@ -239,9 +239,25 @@ var readFromURL = function(e) {
   $("#url-upload-container").hide();
 }
 
+var searchDirectLabel = function(e) {
+  e.preventDefault();
+
+  var label = document.getElementById('label').value;
+  if (!label) {
+    return false;
+  }
+
+  searchAlbums({
+    "label": label
+  }, function(data) {
+    document.getElementById('results').innerHTML = template(
+      data);
+  });
+}
+
 var initLogin = function() {
   if (AUTH.isLoggedin()) {
-    searchLabels();
+    //searchLabels();
   } else {
     $("#logged-in-content-container").hide();
     $("#login-button-container").show();
@@ -249,7 +265,7 @@ var initLogin = function() {
       AUTH.login(function() {
         $("#login-button-container").hide();
         $("#logged-in-content-container").show();
-        searchLabels();
+        //searchLabels();
       })
     });
   }
@@ -259,7 +275,8 @@ var init = function() {
   $("#label").focus();
   $("#clear-history").on("click", clearHistory);
   $("#find-records").on("click", searchLabels);
-  $("#search-form").on("submit", submitSearchForm);
+  $("#add-to-list-btn").on("click", submitSearchForm);
+  $("#search-form").on("submit", searchDirectLabel);
   $("#label-file").on("change", changeOrUploadFile);
   $("#url-update-form").on("submit", readFromURL);
 
@@ -279,4 +296,5 @@ var init = function() {
 
 // INIT
 $(document).ready(init);
-results.addEventListener('click', openSpotifyURL);
+results.addEventListener('click',
+  openSpotifyURL);
