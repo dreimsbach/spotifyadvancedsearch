@@ -22,7 +22,7 @@ var AUTH = (function() {
     window.addEventListener("message", function(event) {
       var hash = JSON.parse(event.data);
       if (hash.type == 'access_token') {
-        setAccessToken(hash.access_token, hash.expires_in || 60);
+        setAccessToken(hash.access_token, hash.expires_in || 3600);
         if (successCallback) {
           successCallback();
         }
@@ -42,7 +42,7 @@ var AUTH = (function() {
   };
 
   var getAccessToken = function() {
-    var expires = 0 + localStorage.getItem('pa_expires', '0');
+    var expires = localStorage.getItem('pa_expires', '0');
     if ((new Date()).getTime() > expires) {
       return '';
     }
@@ -51,9 +51,11 @@ var AUTH = (function() {
   };
 
   var setAccessToken = function(token, expires_in) {
+    var t = new Date();
+    t.setSeconds(t.getSeconds() + expires_in - 1);
+
     localStorage.setItem('pa_token', token);
-    localStorage.setItem('pa_expires', (new Date()).getTime() +
-      expires_in);
+    localStorage.setItem('pa_expires', t.getTime());
   };
 
   var isLoggedin = function() {
