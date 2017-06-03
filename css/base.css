@@ -1,20 +1,20 @@
 body {
     padding: 20px;
 }
-#search-form, .form-control {
+form, .form-control {
     margin-bottom: 20px;
 }
 
-#lastSearchesContainer {
-    display:none;
+.btn {
+  font-size: 16px;
 }
 
-.lastSearchesContainerInner {
+.last-searches-container-inner {
     max-height: 200px;
     overflow:auto;
 }
 
-#clearHistory {
+#clear-history {
     cursor:pointer;
     text-decoration:underline;
 }
@@ -62,4 +62,24 @@ body {
 }
 .cover.playing {
     border: 5px solid #e45343;
+}
+
+#file-upload-container {
+    display:none;
+}
+
+#url-upload-container {
+    display:none;
+}
+
+.btn+.btn {
+    margin-left: 0px!important;
+}
+
+.btn {
+    margin-top: 10px;
+}
+
+#login-button-container {
+  display:none;
 }
