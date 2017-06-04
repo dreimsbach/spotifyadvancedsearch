@@ -9,7 +9,7 @@ var AUTH = (function() {
     if (location.host === 'localhost') {
       REDIRECT_URI = 'http://localhost/spotifysearch/callback.html';
     } else {
-      REDIRECT_URI = 'http://www.monoaural.de/callback.html';
+      REDIRECT_URI = 'https://www.monoaural.de/callback.html';
     }
 
     function getLoginURL() {
