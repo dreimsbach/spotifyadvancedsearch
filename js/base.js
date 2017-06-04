@@ -7,9 +7,10 @@ var
   resultsPlaceholder = document.getElementById('results'),
   definiteResult = [];
 
-var fetchTracks = function(albumId, callback) {
+var fetchAlbums = function(albumIds, callback) {
   $.ajax({
-    url: 'https://api.spotify.com/v1/albums/' + albumId,
+    url: 'https://api.spotify.com/v1/albums/',
+    data: {ids : albumIds},
     headers: {
       'Authorization': 'Bearer ' + AUTH.getAccessToken()
     },
@@ -43,35 +44,43 @@ var searchAlbums = function(requestObj, callback, year) {
 
       if (response.albums.items.length == 0) {
         callback(list);
+        return false;
       }
       // New Releases = within two weeks
       newReleaseFlagDate.setDate(newReleaseFlagDate.getDate() - 14);
 
+      var albumIds = "";
       for (item in records) {
-        var record = records[item],
-          entry = {};
-
-        entry.uri = record.uri;
-        entry.id = record.id;
-        entry.coverimage = record.images[0].url;
-        entry.albumType = record.album_type;
-        entry.label = requestObj.label;
-
-        (function(record, entry, list, newReleaseFlagDate) {
-          fetchTracks(record.id, function(data) {
-            entry.artist = data.artists[0].name;
-            entry.album = record.name;
-            entry.releaseDate = data.release_date;
-            entry.newFlag = new Date(entry.releaseDate) >=
+        var record = records[item];
+        if (albumIds != "") {
+          albumIds += ",";
+        }
+        albumIds+= record.id;
+      }
+      fetchAlbums(albumIds, function(data) {
+        for (item in data) {
+          var albums = data[item];
+          for (item in albums) {
+            var album = albums[item],
+                entry = {};
+            entry.uri = album.uri;
+            entry.id = album.id;
+            entry.coverimage = album.images[0].url;
+            entry.albumType = album.album_type;
+            entry.label = album.label;
+            entry.artist = album.artists[0].name;
+            entry.album = album.name;
+            entry.releaseDate = album.release_date;
+            entry.newFlag = new Date(album.release_date) >=
               newReleaseFlagDate;
-            entry.genres = data.gernres;
+            entry.genres = album.gernres;
             list.push(entry);
             if (records.length == list.length) {
               callback(list);
             }
-          })
-        })(record, entry, list, newReleaseFlagDate);
-      }
+          }
+        }
+      });
     }
   });
 };
