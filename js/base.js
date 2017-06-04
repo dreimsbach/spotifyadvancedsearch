@@ -191,7 +191,7 @@ var setLabelsToStorage = function(currentLabels) {
 }
 
 var clearHistory = function() {
-  localStorage.clear();
+  localStorage.removeItem("labelList");
   showLabelList();
 }
 
@@ -208,7 +208,7 @@ var submitSearchForm = function(e) {
 }
 
 var useDataFromFile = function(data) {
-  localStorage.clear();
+  localStorage.removeItem("labelList");
 
   var lines = data.split('\n');
   for (key in lines) {
