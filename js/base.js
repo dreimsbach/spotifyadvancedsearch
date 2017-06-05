@@ -74,10 +74,15 @@ var searchAlbums = function(requestObj, callback, year) {
             entry.newFlag = new Date(album.release_date) >=
               newReleaseFlagDate;
             entry.genres = album.gernres;
-            list.push(entry);
-            if (records.length == list.length) {
-              callback(list);
+            entry.trackcount = album.tracks.items.length;
+            // skip preview singles
+            if (entry.trackcount > 1) {
+              list.push(entry);
+              if (records.length == list.length) {
+                callback(list);
+              }
             }
+
           }
         }
       });
