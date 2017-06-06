@@ -51,9 +51,11 @@ var AUTH = (function() {
   };
 
   var setAccessToken = function(token, expires_in) {
+    var expiresDate = new Date();
+    expiresDate.setSeconds(expiresDate.getSeconds() + expires_in);
+
     localStorage.setItem('pa_token', token);
-    localStorage.setItem('pa_expires', (new Date()).getTime() +
-      expires_in);
+    localStorage.setItem('pa_expires', expiresDate.getTime());
   };
 
   var isLoggedin = function() {
