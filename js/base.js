@@ -58,6 +58,7 @@ var searchAlbums = function(requestObj, callback, year) {
         albumIds+= record.id;
       }
       fetchAlbums(albumIds, function(data) {
+        var validRecordCount = 0;
         for (item in data) {
           var albums = data[item];
           for (item in albums) {
@@ -77,12 +78,12 @@ var searchAlbums = function(requestObj, callback, year) {
             entry.trackcount = album.tracks.items.length;
             // skip preview singles
             if (entry.trackcount > 1) {
+              validRecordCount++;
               list.push(entry);
-              if (records.length == list.length) {
+              if (validRecordCount == list.length) {
                 callback(list);
               }
-            }
-
+            } 
           }
         }
       });
