@@ -83,3 +83,7 @@ form, .form-control {
 #login-button-container {
   display:none;
 }
+
+#toggle {
+  display:none;
+}

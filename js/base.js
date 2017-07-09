@@ -20,7 +20,7 @@ var fetchAlbums = function(albumIds, callback) {
   });
 };
 
-var searchAlbums = function(requestObj, callback, year) {
+var searchAlbums = function(requestObj, callback, year, toggle) {
   var yearAppendix = "tag:new";
   if (year) {
     yearAppendix = "year:" + year;
@@ -46,6 +46,11 @@ var searchAlbums = function(requestObj, callback, year) {
         callback(list);
         return false;
       }
+
+      if (toggle) {
+        toggleSearchResult();
+      }
+
       // New Releases = within two weeks
       newReleaseFlagDate.setDate(newReleaseFlagDate.getDate() - 14);
 
@@ -83,7 +88,7 @@ var searchAlbums = function(requestObj, callback, year) {
               if (validRecordCount == list.length) {
                 callback(list);
               }
-            } 
+            }
           }
         }
       });
@@ -109,6 +114,9 @@ var searchLabels = function() {
     count = 0;
 
   if (totalSize > 0) {
+
+    toggleSearchResult();
+
     for (key in lastSearches) {
       var entry = lastSearches[key];
       count++;
@@ -270,9 +278,21 @@ var searchDirectLabel = function(e) {
   searchAlbums({
     "label": label
   }, function(data) {
-    document.getElementById('results').innerHTML = template(
-      data);
-  }, document.getElementById('year').value);
+    presentResult(data);
+  }, document.getElementById('year').value, true);
+}
+
+var presentResult = function(data) {
+  document.getElementById('results').innerHTML = template(
+    data);
+  if(data && data.length == 0) {
+    alert("Nothing found");
+  }
+}
+
+var toggleSearchResult = function() {
+  $("#controls").toggle(100);
+  $("#toggle").toggle();
 }
 
 var initLogin = function() {
@@ -299,6 +319,7 @@ var init = function() {
   $("#search-form").on("submit", searchDirectLabel);
   $("#label-file").on("change", changeOrUploadFile);
   $("#url-update-form").on("submit", readFromURL);
+  $("#toggle").on("click", toggleSearchResult);
 
   $("#upload-from-list-btn").on("click", function() {
     $("#url-upload-container").hide();
