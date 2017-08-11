@@ -6,6 +6,7 @@ This Charming Man
 Numero
 Nonesuch
 Erased Tapes
+Old Press Records
 
 # Electronic
 100% Silk
@@ -48,6 +49,8 @@ Robsoul Jazz
 Royal Oak
 Kann
 Mule Musiq
+Banoffee Pies
+Lost Palms
 
 # Jazz
 Jazzman
@@ -63,3 +66,4 @@ Cam Jazz
 #Other
 Soul Jazz
 Heavenly Sweetness
+Room 40
