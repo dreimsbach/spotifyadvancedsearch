@@ -32,7 +32,7 @@ var searchAlbums = function(requestObj, callback, year, toggle) {
       'Authorization': 'Bearer ' + AUTH.getAccessToken()
     },
     data: {
-      q: "label:\"" + requestObj.label + "\", " + yearAppendix,
+      q: "label:\"" + requestObj.label + "\" " + yearAppendix,
       type: 'album',
       market: 'DE'
     },
