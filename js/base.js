@@ -153,7 +153,9 @@ var addToLabelList = function(label) {
       labelObj = {
         "label": label
       },
-      labelKey = encodeURI(label);
+      //labelKey = encodeURI(label);
+      labelKey = label;   
+     
 
     currentLabels[labelKey] = labelObj;
     setLabelsToStorage(currentLabels);
