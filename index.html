@@ -3,65 +3,79 @@
 <head>
   <title>Dirk Reimsbachs Spotify Label News</title>
   
-  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/base-min.css">
+
   <link rel="stylesheet" type="text/css" href="css/base.css">
+  <link rel="stylesheet" type="text/css" href="css/tailwind.css">
 
   <meta name="viewport" content="width = device-width" />
   <meta http-equiv="Cache-control" content="no-cache">
 </head>
 
-<body>
+<body class="font-thin text-base">
   <a href="https://github.com/dreimsbach/spotifyadvancedsearch" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#64CEAA; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
   <!-- Content -->
-  <div class="container">
-    <h1>Dirk Reimsbachs Spotify Label News</h1>
+  <div class="container mx-auto">
+    <div class="my-4 font-thin text-lg">
+     <h1>Find stuff by searching for record labels</h1>
+    </div>
 
     <div id="login-button-container">
-      <button class="btn btn-primary" id="btn-login">Login</button>
+      <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full" id="btn-login">login</button>
     </div>
 
     <div id="toggle">
-      <button class="btn btn-primary" id="btn-login">show search</button>
+      <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">show search</button>
     </div>
 
-    <div id="controls">
+    <div id="controls" class="my-4">
       <div id="logged-in-content-container">
-        <form id="search-form">
-          <input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" id="label" value="" class="form-control" placeholder="Type a Label"/>
-          <input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" id="year" value="" class="form-control" placeholder="Type a year (default: tag:new)"/>
-          <input type="submit" id="search-direct-btn" class="btn btn-secondary" value="Search directly" />
-          <div id="add-to-list-btn" class="btn btn-secondary">Add to List</div>
-          <div id="upload-from-list-btn" class="btn btn-secondary">Upload From File</div>
-          <div id="upload-from-url-btn" class="btn btn-secondary">Upload From Url</div>
+        <form id="search-form" class="w-full max-w-screen-md">
+          <div class="flex items-center border-b border-green-500 py-2">
+            <input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" id="label" value="" placeholder="label" class="appearance-none bg-transparent border-none w-full text-gray-700 mr-5 py-1 px-2 leading-tight focus:outline-none"/>
+            <input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" id="year" value="" placeholder="year (default: last 2 weeks)" class="appearance-none bg-transparent border-none w-full text-gray-700 mr-5 py-1 px-2 leading-tight focus:outline-none"/>
+            <button type="submit" id="search-direct-btn" class="font-bold flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 border-4 text-white py-1 px-2 rounded">
+              Search directly
+            </button>
+          </div>
         </form>
+        <div class="my-8">
+          <span>List controls: </span>
+          <button id="add-to-list-btn" class="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">Add to List</button>
+          <button id="upload-from-list-btn" class="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">Upload List From File</button>
+          <button id="upload-from-url-btn" class="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">Upload List From Url</button>
+        </div>
 
-        <div id="file-upload-container">
+        <div id="file-upload-container" class="my-4">
           <form>
-            <input type="file" id="label-file" class="form-control" value="Upload File" />
+            <input type="file" id="label-file" class="appearance-none bg-transparent border-green-500 w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" value="Upload File" />
           </form>
         </div>
 
-        <div id="url-upload-container">
+        <div id="url-upload-container" class="my-4">
           <form id="url-update-form">
-            <input type="text" id="label-url-list" class="form-control" value="https://spotifysearch.reimsbach.dev/demolist/labellist.txt" />
-            <input type="submit" class="btn btn-secondary" value="Update from URL" />
+            <input type="text" id="label-url-list" class="appearance-none bg-transparent border-green-500 w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" value="https://spotifysearch.reimsbach.dev/demolist/labellist.txt" />
+            <button type="submit" id="search-direct-btn" class="flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-white py-1 px-2 rounded">
+              Update from URL
+            </button>
           </form>
         </div>
 
-        <p>
-          <div id="find-records" class="btn btn-primary">Find from list</div>
-        </p>
+        <div class="my-4">
+          <button id="find-records" class="bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded">Find from list</button>
+        </div>
 
-        <div id="labels-container">
-          <div>Label List (<span id="clear-history">clear all</span>, click label to remove)</div>
-          <div class="last-searches-container-inner">
-            <ul id="last-searches"></ul>
+        <div id="labels-container" class="my-4">
+          <h2>Label List (<span id="clear-history">clear all</span>, click label to remove)</h2>
+          <div class="last-searches-container-inner p-2 max-w-sm">
+            <ul id="last-searches" class="list-disc"></ul>
           </div>
         </div>
       </div>
     </div>
+      
     <div id="results"></div>
   </div>
+
   <!-- Content -->
 
   <!-- Handlebars -->
@@ -88,9 +102,6 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
   <script type="text/javascript" src="js/auth.js"></script>
   <script type="text/javascript" src="js/base.js"></script>
-
-
-
   <!-- Scripts -->
 </body>
 </html>
