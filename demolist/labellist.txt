@@ -7,6 +7,8 @@ Numero
 Nonesuch
 Erased Tapes
 Old Press Records
+Z Tapes
+Spartan Records
 
 # Electronic
 100% Silk
@@ -66,4 +68,3 @@ Cam Jazz
 #Other
 Soul Jazz
 Heavenly Sweetness
-Room 40
