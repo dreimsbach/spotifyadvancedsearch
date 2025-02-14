@@ -78,34 +78,40 @@
 
   <!-- Content -->
 
-  <!-- Handlebars -->
+  <!-- Libraries -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" 
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" 
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/handlebars@4.7.8/dist/handlebars.min.js" 
+    integrity="sha384-/7IOPDPk7kcWe970wNJpeApuC/EzCQwonLz5G/s//R5Jji9QWBcbfASHI0G1nh2p" 
+    crossorigin="anonymous"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/base.js"></script>
+
+  <!-- Templates -->
   <script id="results-template" type="text/x-handlebars-template">
     {{#each this}}
-    <div class="box">
-      <div style="background-image:url({{coverimage}})" data-album-id="{{id}}" data-album-url="{{uri}}" class="cover"></div>
-      <div>{{artist}}</div>
-      <div>{{album}}</div>
-      <div>Label: {{label}}</div>
-      <div>Release: {{releaseDate}}</div>
-      <div>Typ: {{albumType}}</div>
+    <div class="album-container">
+      <div class="cover" data-album-url="{{uri}}">
+        <img src="{{coverimage}}" alt="{{album}} by {{artist}}" />
+        {{#if newFlag}}
+        <div class="new-flag">NEW</div>
+        {{/if}}
+      </div>
+      <div class="info">
+        <div class="artist">{{artist}}</div>
+        <div class="album">{{album}}</div>
+        <div class="label">{{label}}</div>
+        <div class="release">{{releaseDate}}</div>
+      </div>
     </div>
     {{/each}}
   </script>
 
   <script id="no-results-template" type="text/x-handlebars-template">
-     nothing found!
+    <div class="no-results">
+      <p>No results found.</p>
+    </div>
   </script>
-  <!-- Handlebars -->
-
-  <!-- Scripts -->
-  <script defer src="https://code.jquery.com/jquery-3.7.1.min.js" 
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" 
-    crossorigin="anonymous"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.min.js" 
-    integrity="sha512-E1dSFxg+wsfJ4HKjutk/WaCzK7S2wv1POn1RRPGh8ZK+ag9l244Vqxji3r6wVz/1hotCYgJ+zZhSWAh/B/YGpg==" 
-    crossorigin="anonymous"></script>
-  <script defer src="js/auth.js"></script>
-  <script defer src="js/base.js"></script>
-  <!-- Scripts -->
 </body>
 </html>

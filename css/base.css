@@ -32,11 +32,43 @@ form, .form-control {
     margin-left: 10px;
 }
 
+.album-container {
+    display: inline-block;
+    vertical-align: top;
+    margin: 10px;
+    width: 300px;
+}
+
 .cover {
     width: 300px;
     height: 300px;
-    /*display: inline-block;*/
     background-size: cover;
+    cursor: pointer;
+    position: relative;
+}
+
+.info {
+    margin-top: 10px;
+}
+
+.info .artist {
+    font-weight: bold;
+}
+
+.info .album {
+    font-style: italic;
+}
+
+.new-flag {
+    background-color: #C74C4C;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 .box {
@@ -61,9 +93,6 @@ form, .form-control {
     line-height: 36px;
 }
 
-.cover:hover {
-    cursor: pointer;
-}
 .cover.playing {
     border: 5px solid #e45343;
 }
