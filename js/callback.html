@@ -14,13 +14,14 @@ function init() {
       type: 'authorization_code',
       code: code
     }), '*');
+    window.close();
   } else {
-    console.error('No authorization code received');
+    console.error('No authorization code received in URL:', window.location.href);
   }
-  window.close();
 }
 </script>
 </head>
 <body onload="init()">
+<p>Processing authorization...</p>
 </body>
 </html>

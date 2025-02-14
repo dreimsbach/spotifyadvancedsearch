@@ -42,22 +42,17 @@ var AUTH = (function() {
     const codeChallenge = await generateCodeChallenge(codeVerifier);
     localStorage.setItem('code_verifier', codeVerifier);
 
-    function getLoginURL() {
-      return 'https://accounts.spotify.com/authorize?' +
-        'client_id=' + CLIENT_ID +
-        '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
-        '&response_type=code' +
-        '&code_challenge_method=S256' +
-        '&code_challenge=' + codeChallenge +
-        '&scope=user-read-private user-read-email playlist-read-private playlist-read-collaborative';
-    }
-
-    window.addEventListener("message", async function(event) {
+    // Create a one-time message handler
+    const messageHandler = async function(event) {
       try {
+        console.log('Received postMessage event:', event);
         var data = JSON.parse(event.data);
-        console.log('Received message:', data);
+        console.log('Parsed message data:', data);
         
         if (data.type === 'authorization_code') {
+          // Remove the event listener since we only need it once
+          window.removeEventListener("message", messageHandler);
+          
           console.log('Exchanging code for token...');
           await exchangeCode(data.code);
           if (successCallback) {
@@ -67,13 +62,31 @@ var AUTH = (function() {
       } catch (error) {
         console.error('Error processing message:', error);
       }
-    }, false);
+    };
+
+    // Add the message handler
+    window.addEventListener("message", messageHandler);
+
+    function getLoginURL() {
+      const params = new URLSearchParams({
+        client_id: CLIENT_ID,
+        redirect_uri: REDIRECT_URI,
+        response_type: 'code',
+        code_challenge_method: 'S256',
+        code_challenge: codeChallenge,
+        scope: 'user-read-private user-read-email playlist-read-private playlist-read-collaborative'
+      });
+      
+      return 'https://accounts.spotify.com/authorize?' + params.toString();
+    }
 
     var width = 450,
       height = 730,
       left = (screen.width / 2) - (width / 2),
       top = (screen.height / 2) - (height / 2);
 
+    console.log('Opening authorization window with URL:', getLoginURL());
+    
     w = window.open(getLoginURL(),
       'Spotify',
       'menubar=no,location=no,resizable=no,scrollbars=no,status=no, width=' +
