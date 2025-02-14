@@ -202,12 +202,13 @@ $(function() {
                       uri: album.uri,
                       id: album.id,
                       coverimage: album.images[0].url,
-                      type: album.album_type,
+                      album_type: album.album_type,
+                      total_tracks: album.tracks.total,
                       label: album.label,
                       artist: album.artists[0].name,
-                      name: album.name,
-                      release_date: album.release_date,
-                      isNew: new Date(album.release_date) >= newReleaseFlagDate,
+                      album: album.name,
+                      releaseDate: album.release_date,
+                      newFlag: new Date(album.release_date) >= newReleaseFlagDate,
                       genres: album.genres,
                       tracks: {
                         total: album.tracks.total
@@ -263,10 +264,10 @@ $(function() {
               }
               if (count === totalSize) {
                 definiteResult.sort(function(a, b) {
-                  if (a.release_date > b.release_date) {
+                  if (a.releaseDate > b.releaseDate) {
                     return -1;
                   }
-                  if (a.release_date < b.release_date) {
+                  if (a.releaseDate < b.releaseDate) {
                     return 1;
                   }
                   return 0;
