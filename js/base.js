@@ -320,15 +320,8 @@ $(function() {
                 definiteResult = definiteResult.concat(data);
               }
               if (count === totalSize) {
-                definiteResult.sort(function(a, b) {
-                  if (a.releaseDate > b.releaseDate) {
-                    return -1;
-                  }
-                  if (a.releaseDate < b.releaseDate) {
-                    return 1;
-                  }
-                  return 0;
-                });
+                // Sort by release date (newest first)
+                definiteResult.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
                 document.getElementById('results').innerHTML = template(definiteResult);
               }
             });
@@ -472,8 +465,9 @@ $(function() {
     }
 
     var presentResult = function(data) {
-      document.getElementById('results').innerHTML = template(
-        data);
+      // Sort by release date (newest first)
+      data.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+      document.getElementById('results').innerHTML = template(data);
       if(data && data.length == 0) {
         alert("Nothing found");
       }
