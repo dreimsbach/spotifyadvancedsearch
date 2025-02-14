@@ -132,8 +132,8 @@
           <p class="artists">{{#each artists}}{{#if @index}}, {{/if}}<a href="{{external_urls.spotify}}" target="_blank">{{name}}</a>{{/each}}</p>
           <p class="release-date">{{release_date}}</p>
           <p class="album-meta">
-            <span class="album-type">{{capitalize album_type}}</span> • 
-            <span class="track-count">{{total_tracks}} tracks</span>
+            <span class="album-type">{{capitalize type}}</span> • 
+            <span class="track-count">{{tracks.total}} tracks</span>
           </p>
         </div>
       </div>
