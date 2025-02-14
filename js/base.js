@@ -198,21 +198,27 @@ $(function() {
               var albums = data[key];
               Object.keys(albums).forEach(function(albumKey) {
                 var album = albums[albumKey],
-                    entry = {};
-                entry.uri = album.uri;
-                entry.id = album.id;
-                entry.coverimage = album.images[0].url;
-                entry.albumType = album.album_type;
-                entry.label = album.label;
-                entry.artist = album.artists[0].name;
-                entry.album = album.name;
-                entry.releaseDate = album.release_date;
-                entry.newFlag = new Date(album.release_date) >= newReleaseFlagDate;
-                entry.genres = album.gernres;
-                entry.trackcount = album.tracks.items.length;
+                    entry = {
+                      uri: album.uri,
+                      id: album.id,
+                      coverimage: album.images[0].url,
+                      type: album.album_type,
+                      label: album.label,
+                      artist: album.artists[0].name,
+                      name: album.name,
+                      release_date: album.release_date,
+                      isNew: new Date(album.release_date) >= newReleaseFlagDate,
+                      genres: album.genres,
+                      tracks: {
+                        total: album.tracks.total
+                      },
+                      artists: album.artists,
+                      images: album.images,
+                      external_urls: album.external_urls
+                    };
 
                 // skip preview singles
-                if (entry.trackcount > 1) {
+                if (album.tracks.total > 1) {
                   list.push(entry);
                 }
 
@@ -257,10 +263,10 @@ $(function() {
               }
               if (count === totalSize) {
                 definiteResult.sort(function(a, b) {
-                  if (a.releaseDate > b.releaseDate) {
+                  if (a.release_date > b.release_date) {
                     return -1;
                   }
-                  if (a.releaseDate < b.releaseDate) {
+                  if (a.release_date < b.release_date) {
                     return 1;
                   }
                   return 0;
