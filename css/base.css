@@ -160,3 +160,29 @@ form, .form-control {
 .track-count {
   color: #666;
 }
+
+.apple-music {
+  margin-top: 8px;
+}
+
+.apple-music-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  background-color: #fc3c44;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.9em;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.apple-music-link:hover {
+  background-color: #d31c24;
+}
+
+.apple-music-link svg {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}

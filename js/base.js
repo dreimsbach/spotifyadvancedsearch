@@ -196,7 +196,7 @@ $(function() {
             var control = 0;
             Object.keys(data).forEach(function(key) {
               var albums = data[key];
-              Object.keys(albums).forEach(function(albumKey) {
+              Object.keys(albums).forEach(async function(albumKey) {
                 var album = albums[albumKey],
                     entry = {
                       uri: album.uri,
@@ -217,6 +217,29 @@ $(function() {
                       images: album.images,
                       external_urls: album.external_urls
                     };
+
+                // Fetch Apple Music URL
+                async function getAppleMusicUrl(artist, album) {
+                  const searchTerm = `${artist} ${album}`.replace(/[^\w\s]/g, '');
+                  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=album&limit=1`;
+                  
+                  try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    if (data.results && data.results.length > 0) {
+                      return data.results[0].collectionViewUrl;
+                    }
+                  } catch (error) {
+                    console.error('Error fetching Apple Music URL:', error);
+                  }
+                  return null;
+                }
+
+                // Get Apple Music URL
+                const appleMusicUrl = await getAppleMusicUrl(entry.artist, entry.album);
+                if (appleMusicUrl) {
+                  entry.appleMusicUrl = appleMusicUrl;
+                }
 
                 // skip preview singles
                 if (album.tracks.total > 1) {
