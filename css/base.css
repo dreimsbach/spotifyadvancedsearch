@@ -165,24 +165,38 @@ form, .form-control {
   margin-top: 8px;
 }
 
+.streaming-links {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.spotify-link,
 .apple-music-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background-color: #fc3c44;
+  gap: 4px;
+  padding: 4px 8px;
   color: white;
-  border-radius: 6px;
-  font-size: 0.9em;
+  border-radius: 4px;
+  font-size: 0.85em;
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
   text-decoration: none;
 }
 
-.apple-music-link.loading {
-  background-color: #999;
-  cursor: wait;
+.spotify-link {
+  background-color: #1DB954;
+}
+
+.spotify-link:hover {
+  background-color: #1ed760;
+  text-decoration: none;
+}
+
+.apple-music-link {
+  background-color: #fc3c44;
 }
 
 .apple-music-link:hover:not(.loading) {
@@ -190,15 +204,15 @@ form, .form-control {
   text-decoration: none;
 }
 
-.apple-music-link .apple-logo {
-  width: 12px;
+.spotify-logo,
+.apple-logo {
+  width: 14px;
   height: 14px;
 }
 
-.apple-music-link svg {
-  width: 16px;
-  height: 16px;
-  margin-right: 4px;
+.apple-music-link.loading {
+  background-color: #999;
+  cursor: wait;
 }
 
 .apple-music-link.not-found,
@@ -211,37 +225,6 @@ form, .form-control {
 .apple-music-link.not-found:hover,
 .apple-music-link.error:hover {
   background-color: #999;
-}
-
-.streaming-links {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.spotify-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background-color: #1DB954;
-  color: white;
-  border-radius: 6px;
-  font-size: 0.9em;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  text-decoration: none;
-}
-
-.spotify-link:hover {
-  background-color: #1ed760;
-  text-decoration: none;
-}
-
-.spotify-logo {
-  width: 16px;
-  height: 16px;
 }
 
 @keyframes spin {
