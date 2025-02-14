@@ -9,6 +9,110 @@ function waitForHandlebars(callback, maxAttempts = 50) {
   }
 }
 
+// Rate limiting and retry queue
+const requestQueue = {
+  queue: new Map(),
+  processing: false,
+  lastRequest: 0,
+  minDelay: 25,
+  maxRetries: 3,
+  baseDelay: 250,
+  loadingIndicator: null,
+
+  showLoading() {
+    if (!this.loadingIndicator) {
+      this.loadingIndicator = document.getElementById('loading-indicator');
+    }
+    this.loadingIndicator.classList.remove('hidden');
+  },
+
+  hideLoading() {
+    if (!this.loadingIndicator) {
+      this.loadingIndicator = document.getElementById('loading-indicator');
+    }
+    if (this.queue.size === 0) {
+      this.loadingIndicator.classList.add('hidden');
+    }
+  },
+
+  async add(key, fn, onSuccess) {
+    if (this.queue.has(key)) {
+      return; // Already queued
+    }
+
+    this.queue.set(key, {
+      fn,
+      onSuccess,
+      retries: 0,
+      nextTry: Date.now()
+    });
+
+    this.showLoading();
+
+    if (!this.processing) {
+      this.process();
+    }
+  },
+
+  async process() {
+    if (this.processing || this.queue.size === 0) return;
+    this.processing = true;
+
+    while (this.queue.size > 0) {
+      const now = Date.now();
+      let nextItem = null;
+      let nextKey = null;
+
+      // Find next item to process
+      for (const [key, item] of this.queue) {
+        if (item.nextTry <= now) {
+          nextItem = item;
+          nextKey = key;
+          break;
+        }
+      }
+
+      if (!nextItem) {
+        // All items are waiting for retry
+        const minWait = Math.min(...Array.from(this.queue.values()).map(i => i.nextTry - now));
+        await new Promise(resolve => setTimeout(resolve, minWait));
+        continue;
+      }
+
+      // Respect rate limiting
+      const timeToWait = Math.max(0, this.lastRequest + this.minDelay - now);
+      if (timeToWait > 0) {
+        await new Promise(resolve => setTimeout(resolve, timeToWait));
+      }
+
+      try {
+        const result = await nextItem.fn();
+        this.queue.delete(nextKey);
+        this.lastRequest = Date.now();
+        nextItem.onSuccess(result);
+      } catch (error) {
+        if (error.status === 429 && nextItem.retries < this.maxRetries) {
+          const retryAfter = error.getResponseHeader?.('Retry-After') || 1;
+          const delay = Math.max(
+            this.baseDelay * Math.pow(2, nextItem.retries),
+            retryAfter * 1000
+          );
+          nextItem.retries++;
+          nextItem.nextTry = Date.now() + delay;
+          console.log(`Rate limited for ${nextKey}. Retry ${nextItem.retries} scheduled in ${delay}ms`);
+        } else {
+          this.queue.delete(nextKey);
+          console.error(`Failed to process ${nextKey} after ${nextItem.retries} retries:`, error);
+        }
+      }
+
+      this.hideLoading();
+    }
+
+    this.processing = false;
+  }
+};
+
 // Initialize after libraries are loaded
 $(function() {
   waitForHandlebars(function() {
@@ -22,17 +126,18 @@ $(function() {
       definiteResult = [];
 
     var fetchAlbums = function(albumIds, callback) {
-      $.ajax({
-        url: 'https://api.spotify.com/v1/albums/',
-        data: {ids : albumIds},
-        headers: {
-          'Authorization': 'Bearer ' + AUTH.getAccessToken()
-        }
-      }).done(function(response) {
-        callback(response);
-      }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.error('Failed to fetch albums:', textStatus, errorThrown);
-      });
+      const key = `albums-${albumIds}`;
+      requestQueue.add(
+        key,
+        () => $.ajax({
+          url: 'https://api.spotify.com/v1/albums/',
+          data: {ids : albumIds},
+          headers: {
+            'Authorization': 'Bearer ' + AUTH.getAccessToken()
+          }
+        }),
+        callback
+      );
     };
 
     var searchAlbums = function(requestObj, callback, year, toggle) {
@@ -41,76 +146,79 @@ $(function() {
         yearAppendix = "year:" + year;
       }
 
-      $.ajax({
-        url: 'https://api.spotify.com/v1/search',
-        headers: {
-          'Authorization': 'Bearer ' + AUTH.getAccessToken()
-        },
-        data: {
-          q: "label:\"" + requestObj.label + "\" " + yearAppendix,
-          type: 'album',
-          market: 'DE'
-        }
-      }).done(function(response) {
-        var list = [],
-          newReleaseFlagDate = new Date(),
-          records = response.albums.items;
-
-        if (response.albums.items.length === 0) {
-          callback(list);
-          return false;
-        }
-
-        if (toggle) {
-          toggleSearchResult();
-        }
-
-        // New Releases = within two weeks
-        newReleaseFlagDate.setDate(newReleaseFlagDate.getDate() - 14);
-
-        var albumIds = "";
-        Object.keys(records).forEach(function(key) {
-          var record = records[key];
-          if (albumIds !== "") {
-            albumIds += ",";
+      const key = `search-${requestObj.label}-${yearAppendix}`;
+      requestQueue.add(
+        key,
+        () => $.ajax({
+          url: 'https://api.spotify.com/v1/search',
+          headers: {
+            'Authorization': 'Bearer ' + AUTH.getAccessToken()
+          },
+          data: {
+            q: "label:\"" + requestObj.label + "\" " + yearAppendix,
+            type: 'album',
+            market: 'DE'
           }
-          albumIds += record.id;
-        });
+        }),
+        (response) => {
+          var list = [],
+            newReleaseFlagDate = new Date(),
+            records = response.albums.items;
 
-        fetchAlbums(albumIds, function(data) {
-          var control = 0;
-          Object.keys(data).forEach(function(key) {
-            var albums = data[key];
-            Object.keys(albums).forEach(function(albumKey) {
-              var album = albums[albumKey],
-                  entry = {};
-              entry.uri = album.uri;
-              entry.id = album.id;
-              entry.coverimage = album.images[0].url;
-              entry.albumType = album.album_type;
-              entry.label = album.label;
-              entry.artist = album.artists[0].name;
-              entry.album = album.name;
-              entry.releaseDate = album.release_date;
-              entry.newFlag = new Date(album.release_date) >= newReleaseFlagDate;
-              entry.genres = album.gernres;
-              entry.trackcount = album.tracks.items.length;
+          if (response.albums.items.length === 0) {
+            callback(list);
+            return false;
+          }
 
-              // skip preview singles
-              if (entry.trackcount > 1) {
-                list.push(entry);
-              }
+          if (toggle) {
+            toggleSearchResult();
+          }
 
-              control++;
-              if (records.length === control) {
-               callback(list);
-              }
+          // New Releases = within two weeks
+          newReleaseFlagDate.setDate(newReleaseFlagDate.getDate() - 14);
+
+          var albumIds = "";
+          Object.keys(records).forEach(function(key) {
+            var record = records[key];
+            if (albumIds !== "") {
+              albumIds += ",";
+            }
+            albumIds += record.id;
+          });
+
+          fetchAlbums(albumIds, function(data) {
+            var control = 0;
+            Object.keys(data).forEach(function(key) {
+              var albums = data[key];
+              Object.keys(albums).forEach(function(albumKey) {
+                var album = albums[albumKey],
+                    entry = {};
+                entry.uri = album.uri;
+                entry.id = album.id;
+                entry.coverimage = album.images[0].url;
+                entry.albumType = album.album_type;
+                entry.label = album.label;
+                entry.artist = album.artists[0].name;
+                entry.album = album.name;
+                entry.releaseDate = album.release_date;
+                entry.newFlag = new Date(album.release_date) >= newReleaseFlagDate;
+                entry.genres = album.gernres;
+                entry.trackcount = album.tracks.items.length;
+
+                // skip preview singles
+                if (entry.trackcount > 1) {
+                  list.push(entry);
+                }
+
+                control++;
+                if (records.length === control) {
+                 callback(list);
+                }
+              });
             });
           });
-        });
-      }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.error('Failed to search albums:', textStatus, errorThrown);
-      });
+        }
+      );
     };
 
     var openSpotifyURL = function(e) {
