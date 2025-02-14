@@ -14,9 +14,9 @@ const requestQueue = {
   queue: new Map(),
   processing: false,
   lastRequest: 0,
-  minDelay: 100,
+  minDelay: 50,
   maxRetries: 3,
-  baseDelay: 1000,
+  baseDelay: 500,
   loadingIndicator: null,
 
   showLoading() {
