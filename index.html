@@ -110,6 +110,32 @@
         <div class="album">{{album}}</div>
         <div class="label">{{label}}</div>
         <div class="release">{{releaseDate}}</div>
+        <div class="album-type">{{capitalize album_type}}</div>
+        <div class="track-count">{{total_tracks}} tracks</div>
+      </div>
+    </div>
+    {{/each}}
+  </script>
+
+  <script id="album-template" type="text/x-handlebars-template">
+    {{#each albums}}
+    <div class="album">
+      <div class="album-inner">
+        {{#if images.length}}
+          <a href="{{external_urls.spotify}}" target="_blank">
+            <img src="{{images.0.url}}" alt="{{name}}">
+          </a>
+        {{/if}}
+        {{#if isNew}}<div class="new-flag">NEW</div>{{/if}}
+        <div class="album-details">
+          <h3><a href="{{external_urls.spotify}}" target="_blank">{{name}}</a></h3>
+          <p class="artists">{{#each artists}}{{#if @index}}, {{/if}}<a href="{{external_urls.spotify}}" target="_blank">{{name}}</a>{{/each}}</p>
+          <p class="release-date">{{release_date}}</p>
+          <p class="album-meta">
+            <span class="album-type">{{capitalize type}}</span> • 
+            <span class="track-count">{{tracks.total}} tracks</span>
+          </p>
+        </div>
       </div>
     </div>
     {{/each}}

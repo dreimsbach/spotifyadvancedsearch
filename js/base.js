@@ -125,6 +125,12 @@ $(function() {
       resultsPlaceholder = document.getElementById('results'),
       definiteResult = [];
 
+    // Register Handlebars helpers
+    Handlebars.registerHelper('capitalize', function(str) {
+      if (typeof str !== 'string') return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    });
+
     var fetchAlbums = function(albumIds, callback) {
       const key = `albums-${albumIds}`;
       requestQueue.add(
@@ -192,21 +198,28 @@ $(function() {
               var albums = data[key];
               Object.keys(albums).forEach(function(albumKey) {
                 var album = albums[albumKey],
-                    entry = {};
-                entry.uri = album.uri;
-                entry.id = album.id;
-                entry.coverimage = album.images[0].url;
-                entry.albumType = album.album_type;
-                entry.label = album.label;
-                entry.artist = album.artists[0].name;
-                entry.album = album.name;
-                entry.releaseDate = album.release_date;
-                entry.newFlag = new Date(album.release_date) >= newReleaseFlagDate;
-                entry.genres = album.gernres;
-                entry.trackcount = album.tracks.items.length;
+                    entry = {
+                      uri: album.uri,
+                      id: album.id,
+                      coverimage: album.images[0].url,
+                      album_type: album.album_type,
+                      total_tracks: album.tracks.total,
+                      label: album.label,
+                      artist: album.artists[0].name,
+                      album: album.name,
+                      releaseDate: album.release_date,
+                      newFlag: new Date(album.release_date) >= newReleaseFlagDate,
+                      genres: album.genres,
+                      tracks: {
+                        total: album.tracks.total
+                      },
+                      artists: album.artists,
+                      images: album.images,
+                      external_urls: album.external_urls
+                    };
 
                 // skip preview singles
-                if (entry.trackcount > 1) {
+                if (album.tracks.total > 1) {
                   list.push(entry);
                 }
 
