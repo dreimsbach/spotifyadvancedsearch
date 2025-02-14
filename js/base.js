@@ -114,17 +114,26 @@ const requestQueue = {
 };
 
 // Handle Apple Music button clicks
-async function handleAppleMusicClick(e) {
-  const button = e.target.closest('.apple-music-link');
-  if (!button) return;
-
-  // Prevent multiple clicks
-  if (button.classList.contains('loading')) return;
+async function handleAppleMusicClick(event) {
+  event.preventDefault();
+  
+  const button = event.currentTarget;
+  
+  // If the button already has a href, just follow the link
+  if (button.hasAttribute('href')) {
+    window.open(button.getAttribute('href'), '_blank');
+    return;
+  }
   
   const artist = button.dataset.artist;
   const album = button.dataset.album;
 
   await searchAppleMusicLink(button, artist, album);
+  
+  // If search was successful and we have a href, open it
+  if (button.hasAttribute('href')) {
+    window.open(button.getAttribute('href'), '_blank');
+  }
 }
 
 async function searchAppleMusicLink(button, artist, album) {
