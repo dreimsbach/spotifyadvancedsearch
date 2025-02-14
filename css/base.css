@@ -145,3 +145,18 @@ form, .form-control {
 .animate-pulse {
   animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+.album-meta {
+  color: #666;
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+.album-type {
+  text-transform: capitalize;
+  color: #1DB954;
+}
+
+.track-count {
+  color: #666;
+}
