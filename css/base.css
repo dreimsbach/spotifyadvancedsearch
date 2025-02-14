@@ -173,11 +173,17 @@ form, .form-control {
   color: white;
   border-radius: 4px;
   font-size: 0.9em;
-  text-decoration: none;
+  border: none;
+  cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.apple-music-link:hover {
+.apple-music-link.loading {
+  background-color: #999;
+  cursor: wait;
+}
+
+.apple-music-link:hover:not(.loading) {
   background-color: #d31c24;
 }
 
