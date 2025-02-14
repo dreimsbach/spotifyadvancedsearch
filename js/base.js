@@ -113,115 +113,6 @@ const requestQueue = {
   }
 };
 
-// iTunes API request queue
-const itunesQueue = {
-  queue: new Map(),
-  processing: false,
-  lastRequest: 0,
-  minDelay: 1000, // 1 second between requests
-  maxRetries: 3,
-  baseDelay: 2000,
-
-  async add(key, fn) {
-    if (this.queue.has(key)) {
-      return this.queue.get(key).promise;
-    }
-
-    const promiseData = {};
-    const promise = new Promise((resolve, reject) => {
-      promiseData.resolve = resolve;
-      promiseData.reject = reject;
-    });
-
-    this.queue.set(key, {
-      fn,
-      promiseData,
-      promise,
-      retries: 0,
-      nextTry: Date.now()
-    });
-
-    if (!this.processing) {
-      this.process();
-    }
-
-    return promise;
-  },
-
-  async process() {
-    if (this.processing || this.queue.size === 0) return;
-    this.processing = true;
-
-    while (this.queue.size > 0) {
-      const now = Date.now();
-      let nextItem = null;
-      let nextKey = null;
-
-      for (const [key, item] of this.queue) {
-        if (item.nextTry <= now) {
-          nextItem = item;
-          nextKey = key;
-          break;
-        }
-      }
-
-      if (!nextItem) {
-        const minWait = Math.min(...Array.from(this.queue.values()).map(i => i.nextTry - now));
-        await new Promise(resolve => setTimeout(resolve, minWait));
-        continue;
-      }
-
-      const timeToWait = Math.max(0, this.lastRequest + this.minDelay - now);
-      if (timeToWait > 0) {
-        await new Promise(resolve => setTimeout(resolve, timeToWait));
-      }
-
-      try {
-        const result = await nextItem.fn();
-        this.queue.delete(nextKey);
-        this.lastRequest = Date.now();
-        nextItem.promiseData.resolve(result);
-      } catch (error) {
-        if (error.status === 403 && nextItem.retries < this.maxRetries) {
-          const delay = this.baseDelay * Math.pow(2, nextItem.retries);
-          nextItem.retries++;
-          nextItem.nextTry = Date.now() + delay;
-          console.log(`Rate limited by iTunes API. Retry ${nextItem.retries} in ${delay}ms`);
-        } else {
-          this.queue.delete(nextKey);
-          nextItem.promiseData.reject(error);
-        }
-      }
-    }
-
-    this.processing = false;
-  }
-};
-
-// Fetch Apple Music URL with rate limiting
-async function getAppleMusicUrl(artist, album) {
-  const searchTerm = `${artist} ${album}`.replace(/[^\w\s]/g, '');
-  const key = `itunes-${searchTerm}`;
-  
-  try {
-    const data = await itunesQueue.add(key, async () => {
-      const url = `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=album&limit=1`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw { status: response.status };
-      }
-      return response.json();
-    });
-
-    if (data.results && data.results.length > 0) {
-      return data.results[0].collectionViewUrl;
-    }
-  } catch (error) {
-    console.error('Error fetching Apple Music URL:', error);
-  }
-  return null;
-}
-
 // Handle Apple Music button clicks
 async function handleAppleMusicClick(e) {
   const button = e.target.closest('.apple-music-link');
@@ -363,12 +254,6 @@ $(function() {
                       external_urls: album.external_urls
                     };
 
-                // Fetch Apple Music URL
-                const appleMusicUrl = await getAppleMusicUrl(entry.artist, entry.album);
-                if (appleMusicUrl) {
-                  entry.appleMusicUrl = appleMusicUrl;
-                }
-
                 // skip preview singles
                 if (album.tracks.total > 1) {
                   list.push(entry);
@@ -376,7 +261,7 @@ $(function() {
 
                 control++;
                 if (records.length === control) {
-                 callback(list);
+                  callback(list);
                 }
               });
             });
