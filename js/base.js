@@ -113,6 +113,15 @@ const requestQueue = {
   }
 };
 
+// Handle Spotify link clicks
+$(document).on('click', '.spotify-link', function(event) {
+  event.preventDefault();
+  const uri = $(this).data('uri');
+  if (uri) {
+    window.open(`https://open.spotify.com/album/${uri.split(':')[2]}`, '_blank');
+  }
+});
+
 // Handle Apple Music button clicks
 $(document).on('click', '.apple-music-link', async function(event) {
   event.preventDefault();
