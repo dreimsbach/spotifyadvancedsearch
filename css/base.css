@@ -168,10 +168,11 @@ form, .form-control {
 .apple-music-link {
   display: inline-flex;
   align-items: center;
-  padding: 4px 8px;
+  gap: 6px;
+  padding: 6px 12px;
   background-color: #fc3c44;
   color: white;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 0.9em;
   border: none;
   cursor: pointer;
@@ -187,8 +188,27 @@ form, .form-control {
   background-color: #d31c24;
 }
 
+.apple-music-link .apple-logo {
+  width: 12px;
+  height: 14px;
+}
+
 .apple-music-link svg {
   width: 16px;
   height: 16px;
   margin-right: 4px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+  transform-origin: center;
 }
