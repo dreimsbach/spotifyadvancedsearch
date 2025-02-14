@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Spotify Authorization Callback</title>
+<script>
+function init() {
+  // Extract code from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  
+  if (code) {
+    console.log('Received authorization code:', code);
+    // Send the authorization code back to the parent window
+    window.opener.postMessage(JSON.stringify({
+      type: 'authorization_code',
+      code: code
+    }), '*');
+  } else {
+    console.error('No authorization code received');
+  }
+  window.close();
+}
+</script>
 </head>
-<body>
-  <script>
-    // Extract code from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    
-    if (code) {
-      // Send the authorization code back to the parent window
-      window.opener.postMessage(JSON.stringify({
-        type: 'authorization_code',
-        code: code
-      }), '*');
-    }
-    window.close();
-  </script>
+<body onload="init()">
 </body>
 </html>
