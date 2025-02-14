@@ -160,3 +160,67 @@ form, .form-control {
 .track-count {
   color: #666;
 }
+
+.apple-music {
+  margin-top: 8px;
+}
+
+.apple-music-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: #fc3c44;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.9em;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.apple-music-link.loading {
+  background-color: #999;
+  cursor: wait;
+}
+
+.apple-music-link:hover:not(.loading) {
+  background-color: #d31c24;
+}
+
+.apple-music-link .apple-logo {
+  width: 12px;
+  height: 14px;
+}
+
+.apple-music-link svg {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+.apple-music-link.not-found,
+.apple-music-link.error {
+  background-color: #999;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.apple-music-link.not-found:hover,
+.apple-music-link.error:hover {
+  background-color: #999;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+  transform-origin: center;
+}
